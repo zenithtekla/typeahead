@@ -20,7 +20,7 @@
   };
 }; */
 
-  $.getJSON("preface.php", function(states) {
+  $.getJSON("json/preface.php", function(states) {
     // var string = JSON.stringify(states); // make string
     // var states = $.parseJSON(string); // make arrays from string
     // console.log(states);
@@ -48,12 +48,14 @@
     // is compatible with the typeahead jQuery plugin
     source: engine.ttAdapter()
   });
-});
+}).error(function(){
+            console.log('error');
+    });;
 
 // new test
 $.ajax({
   dataType: "json",
-  url: "countries.json"})
+  url: "json/countries.json"})
   .done( function(countries) {   
     $.getJSON("countries.json", function(countries) {
       // constructs the suggestion engine
@@ -82,6 +84,57 @@ $.ajax({
     }); 
   }
 );
+
+// AJAX async
+// new test
+$.ajax({
+  dataType: "json",
+  url: "json/countries.json"})
+  .done( function(countries) {
+      // constructs the suggestion engine
+      var engine = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        // `countries` is an array of country names defined in "The Basics"
+        local: $.map(countries, function(country) { return { value: country }; })
+      });
+      
+      // kicks off the loading/processing of `local` and `prefetch`
+      engine.initialize();
+      
+      $('#async .typeahead').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+      },
+      {
+        name: 'countries',
+        displayKey: 'value',
+        // `ttAdapter` wraps the suggestion engine in an adapter that
+        // is compatible with the typeahead jQuery plugin
+        source: engine.ttAdapter()
+      });
+  })
+  .fail(function(jqXHR, textStatus, errorThrown){
+    console.log('ERROR', textStatus, errorThrown);
+  }); // at sitepoint below they use only jqXHR, textStatus
+// deffered http://www.html5rocks.com/en/tutorials/async/deferred/
+//errorThrown
+// dataFilter, request 'timeout',fail handler, contentType options,parsing XML http://www.sitepoint.com/5-jquery-ajax-examples/
+//getJSON nested elements
+// http://stackoverflow.com/questions/10490473/jsonjavascript-jquery-how-to-import-data-from-a-json-file-and-parse-it
+$.ajax({
+        url: "json/staff.php",
+        dataType: "json",
+        success: function(data) {
+            console.log(data);
+            $('#console').append('<p style="color:olive">'+ data.employees[0].firstName+'</p>');
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log('ERROR - Requested page not found. [404]', textStatus, errorThrown);
+        }
+    });
+
 
 // Instantiate the Bloodhound suggestion engine
 var countries = new Bloodhound({
@@ -139,13 +192,13 @@ $('#pre-fetch-local .typeahead').typeahead(null, {
 // http://www.kodingmadesimple.com/2015/05/read-parse-json-string-jquery-html-table.html
 // http://webhole.net/2009/11/28/how-to-read-json-with-javascript/
 // http://hayageek.com/jquery-ajax-json-parsejson-post-getjson/
-var obj = $.parseJSON('{"name":"hayageek","age":32,"marks":[80,70,60,50,60,80]}')
+var obj = $.parseJSON('{"name":"hayageek","age":32,"marks":[80,70,60,50,60,80]}');
 	console.log(obj.name);
 	console.log(obj.age);
 	console.log(obj.marks);
 // Print out all JSON data http://hayageek.com/examples/jquery/ajax-json-examples/index.php?tab=2	
 var getParams={  };
-$.getJSON("countries.json",getParams,
+$.getJSON("json/countries.json",getParams,
 function(data, textStatus, jqXHR)
 {
 	 $.each(data, function(k, v) 
@@ -157,7 +210,7 @@ function(data, textStatus, jqXHR)
 
 });
 
-var postParams ={ip:'115.113.211.130'};
+var postParams ={ip:"115.113.211.130"};
 $.post("jsonpost.php",postParams,
 function(data, textStatus, jqXHR)
 {
@@ -169,6 +222,5 @@ function(data, textStatus, jqXHR)
 
 },"json").fail(function(jqXHR, textStatus, errorThrown) 
 	{
-		alert(textStatus);
+		console.log( jqXHR + " " + textStatus + " " + errorThrown);
 	});
-
