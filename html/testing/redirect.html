@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>JQuery AJAX JSON Test</title>
+		<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				/* Just some fun with the text inputs i like to do */
+				$("input[type$='text']").focus(function() {
+					if ($(this).attr("class") == "norm") return false;
+					$(this).val("")
+					       .css("color","#000000")
+						   .css("font-style","normal")
+						   .addClass("norm");
+				});
+				
+				/*  This will prevent the form from submitting normally */
+				$("form").submit(function() {
+					return false;
+				});
+				
+				/* submit click event */
+				$("input[type$='submit']").click(function() {
+					if ($("input[name$='first_name']").val() == "Enter your first name") {
+						$("input[name$='first_name']").val("")
+					} 
+					if ($("input[name$='last_name']").val() == "Enter your last name") {
+						$("input[name$='last_name']").val("")
+					}
+					if ($("input[name$='birth_date']").val() == "Enter your birthday ex(01/01/2010)") {
+						$("input[name$='birth_date']").val("")
+					}
+					
+					/* And our AJAX call */
+					$.post(
+						/* Where we are sending the call */
+						'json_ajax.php', 
+					/* Send all the data to our PHP page for processing */
+					{ 
+						first_name: $("input[name$='first_name']").val(),
+						last_name: $("input[name$='last_name']").val(),
+						birth_date: $("input[name$='birth_date']").val(),
+						scramble_name: $("input[name$='scramble_name']").val(),
+						convert_bday: $("input[name$='convert_bday']").val(),
+						md5_hash: $("input[name$='md5_hash']").val()
+					},
+					/* Our call back function to check the JSON and modify the HTML */
+					function(jsonData) {
+						/* catch the error if present */
+						if (jsonData.error) {
+							if ($("span.red").length) $("span.red").remove();
+							$("form").prepend($("<span class='red'>" + jsonData.error + "</span>"));
+							return false;
+						}
+						/* no error we show the results in a new div */
+						if (jsonData.results) {
+							if ($("div.results").length) $("div.results").remove();
+							$("<div class='results'/>").html(jsonData.results)
+								.appendTo($("body"));
+						}
+					},
+						/* we are expecting JSON as the return */
+						"json"
+					);
+				});
+			});
+		</script>
+		<style type="text/css">
+			input[type="text"] { color: #6F6F6F; font-style: italic; margin-bottom: 2px;}
+			.red { color: #FF0000; }
+			.results { padding: 10px; border: 1px double #000000; }
+		</style>
+	</head>
+<body>
+	<form action="" method="post">
+		<input type="text" name="first_name" value="Enter your first name" size="50"/><br/>
+		<input type="text" name="last_name" value="Enter your last name" size="50"/><br/>
+		<input type="text" name="birth_date" value="Enter your birthday ex(01/01/2010)" size="50"/><br/>
+		<br/>
+		
+		<input type="submit" value="Submit Data"/><br/>
+	</form>
+</body>
+</html>

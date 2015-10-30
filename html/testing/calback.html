@@ -1,0 +1,17 @@
+<script src="../bootstrap/jquery-2.0.3.min.js"></script> 
+<script type="text/javascript">
+$(function(){
+  $("#b").on("click",function(){
+  // Assign handlers immediately after making the request,
+  // and remember the jqxhr object for this request
+      $.post("post.php", { comment: "my comment" }, function() {
+        alert("success"); 
+      })
+        .success(function() { alert("second success"); })
+        .error(function() { alert("error"); })
+        .complete(function() { alert("complete");
+      });
+  });
+});
+</script>
+<input id="b" type="button" value="Test" /><br />

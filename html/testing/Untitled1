@@ -1,0 +1,38 @@
+
+	$('#assembly-number').click(function(){
+		$('#assembly-number').editable({
+            type:  'input',
+            pk:    1,
+            name:  'assembly-number',
+            url:   'post.php',
+            title: 'Assembly Number'
+    	});
+    });
+	$("#__toggle_editing_on").click(function(event){
+                    event.preventDefault();
+                    $.ajax({
+                        url: "http://localhost/No-CMS/main/set_editing_mode",
+                        success : function(response){
+                            location.reload();
+                        }
+                    });
+    });
+
+    input {
+    margin-top: 5px;
+    width: 400px;
+}
+
+#input {
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+    background-color: white;
+    background-color: -moz-field;
+    border: 1px solid darkgray;
+    box-shadow: 1px 1px 1px 0 lightgray inset;
+    font: -moz-field;
+    font: -webkit-small-control;
+    margin-top: 5px;
+    padding: 2px 3px;
+    width: 398px;
+}
